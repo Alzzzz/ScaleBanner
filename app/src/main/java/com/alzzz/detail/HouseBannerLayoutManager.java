@@ -675,8 +675,8 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
                 measureChildWithMargins(scrap, 0, 0);
                 resetViewProperty(scrap);
                 // we need i to calculate the real offset of current view
-                final float targetOffset = getProperty(i) - mOffset;
-                layoutScrap(scrap, targetOffset);
+                float targetOffset = getProperty(i) - mOffset;
+                layoutScrap(scrap, targetOffset, adapterPosition);
                 final float orderWeight = mEnableBringCenterToFront ?
                         setViewElevation(scrap, targetOffset) : adapterPosition;
                 if (orderWeight > lastOrderWeight) {
@@ -718,13 +718,16 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         return !mShouldReverseLayout ? 0 : -(getItemCount() - 1) * mInterval;
     }
 
-    private void layoutScrap(View scrap, float targetOffset) {
+    private void layoutScrap(View scrap, float targetOffset, int pos) {
         final int left = calItemLeft(scrap, targetOffset);
         final int top = calItemTop(scrap, targetOffset);
         if (mOrientation == VERTICAL) {
             layoutDecorated(scrap, mSpaceInOther + left, mSpaceMain + top,
                     mSpaceInOther + left + mDecoratedMeasurementInOther, mSpaceMain + top + mDecoratedMeasurement);
         } else {
+            if (pos == 0){
+                targetOffset += mSpaceMain;
+            }
             layoutDecorated(scrap, mSpaceMain + left, mSpaceInOther + top,
                     mSpaceMain + left + mDecoratedMeasurement, mSpaceInOther + top + mDecoratedMeasurementInOther);
         }
