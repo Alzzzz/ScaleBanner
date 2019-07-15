@@ -123,7 +123,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      */
     protected abstract float setInterval();
 
-    protected abstract void setItemViewProperty(View itemView, float targetOffset);
+    protected abstract void setItemViewProperty(View itemView, float targetOffset, int pos);
 
     /**
      * cause elevation is not support below api 21,
@@ -725,13 +725,10 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
             layoutDecorated(scrap, mSpaceInOther + left, mSpaceMain + top,
                     mSpaceInOther + left + mDecoratedMeasurementInOther, mSpaceMain + top + mDecoratedMeasurement);
         } else {
-            if (pos == 0){
-                targetOffset += mSpaceMain;
-            }
             layoutDecorated(scrap, mSpaceMain + left, mSpaceInOther + top,
                     mSpaceMain + left + mDecoratedMeasurement, mSpaceInOther + top + mDecoratedMeasurementInOther);
         }
-        setItemViewProperty(scrap, targetOffset);
+        setItemViewProperty(scrap, targetOffset, pos);
     }
 
     protected int calItemLeft(View itemView, float targetOffset) {

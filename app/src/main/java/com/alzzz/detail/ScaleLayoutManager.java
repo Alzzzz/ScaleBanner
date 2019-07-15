@@ -110,8 +110,8 @@ public class ScaleLayoutManager extends HouseBannerLayoutManager {
     }
 
     @Override
-    protected void setItemViewProperty(View itemView, float targetOffset) {
-        float scale = calculateScale(targetOffset + mSpaceMain);
+    protected void setItemViewProperty(View itemView, float targetOffset, int pos) {
+        float scale = calculateScale(targetOffset + mSpaceMain, pos);
         itemView.setScaleX(scale);
         itemView.setScaleY(scale);
         final float alpha = calAlpha(targetOffset);
@@ -135,8 +135,15 @@ public class ScaleLayoutManager extends HouseBannerLayoutManager {
      * @param x start positon of the view you want scale
      * @return the scale rate of current scroll mOffset
      */
-    private float calculateScale(float x) {
-        float deltaX = Math.abs(x - mSpaceMain);
+    private float calculateScale(float x, int pos) {
+        float deltaX;
+        if (pos == 0){
+            deltaX = Math.abs(x);
+        } else {
+            deltaX = Math.abs(x - mSpaceMain);
+        }
+
+
         if (deltaX - mDecoratedMeasurement > 0) deltaX = mDecoratedMeasurement;
         return 1f - deltaX / mDecoratedMeasurement * (1f - minScale);
     }
