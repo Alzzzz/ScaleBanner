@@ -290,7 +290,7 @@ public class HouseBannerSnapHelper extends RecyclerView.OnFlingListener {
     }
 
     private int distanceToStart(@NonNull View targetView, OrientationHelper helper) {
-        return helper.getDecoratedStart(targetView);
+        return helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
     }
 
     private boolean isTail(RecyclerView.LayoutManager layoutManager, int position) {

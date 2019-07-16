@@ -491,7 +491,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     }
 
     private float getProperty(int position) {
-        return mShouldReverseLayout ? position * -mInterval : position * mInterval;
+        return mShouldReverseLayout ? position * -mInterval: position * mInterval + mOrientationHelper.getStartAfterPadding() ;
     }
 
     /**
@@ -708,11 +708,10 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     }
 
     private float getTargetScale(int i) {
-        float x = getProperty(i) - mOffset;
+        float x = getProperty(i) - mOffset  - mOrientationHelper.getStartAfterPadding();
         float deltaX;
         if (isHeader(i)){
             deltaX = Math.abs(x)*mDecoratedMeasurement/Math.abs(mDecoratedMeasurement-mSpaceMain);
-
         } else if (isTail(i)){
             deltaX = Math.abs(x - 2*mSpaceMain) * mDecoratedMeasurement/Math.abs(mDecoratedMeasurement-mSpaceMain);
         } else {
@@ -834,6 +833,12 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
 
     /* package */ int getCurrentPositionOffset() {
         if (mInterval == 0) return 0;
+        //只对最后一个View进行特殊的偏移处理
+        if (mOffset > (getMaxOffset() - mInterval + mSpaceMain)){
+            //如果已经偏移到最后一屏,只要当前View超过中间就进行偏移
+            return (int) Math.floor((mOffset + mOrientationHelper.getTotalSpace()/2.0)/mInterval);
+        }
+
         return Math.round(mOffset / mInterval);
     }
 
