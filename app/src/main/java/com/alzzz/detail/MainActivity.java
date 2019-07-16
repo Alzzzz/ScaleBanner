@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        ScaleLayoutManager layoutManager = new ScaleLayoutManager(this, 20);
+        ScaleLayoutManager layoutManager = new ScaleLayoutManager(this, 0);
         layoutManager.setOrientation(HouseBannerLayoutManager.HORIZONTAL);
         layoutManager.setInfinite(false);
         recyclerView.setLayoutManager(layoutManager);
@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
 //        itemDecoration = new RoomTypeItemDecoration(40);
 //        recyclerView.addItemDecoration(itemDecoration);
 
-//        CenterSnapHelper pagerSnapHelper = new CenterSnapHelper();
-//        pagerSnapHelper.attachToRecyclerView(recyclerView);
+        HouseBannerSnapHelper pagerSnapHelper = new HouseBannerSnapHelper();
+        pagerSnapHelper.attachToRecyclerView(recyclerView);
 
         roomTypeAdapter = new RoomTypeAdapter(this);
         recyclerView.setAdapter(roomTypeAdapter);

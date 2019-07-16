@@ -774,7 +774,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      * the view will be removed and recycled in {@link #layoutItems(RecyclerView.Recycler)}
      */
     protected float maxRemoveOffset() {
-        return mOrientationHelper.getTotalSpace() + mSpaceMain;
+        return mOrientationHelper.getTotalSpace() + mSpaceMain+mDecoratedMeasurement;
     }
 
     /**
@@ -782,7 +782,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      * the view will be removed and recycled in {@link #layoutItems(RecyclerView.Recycler)}
      */
     protected float minRemoveOffset() {
-        return -mOrientationHelper.getStartAfterPadding() - mSpaceMain - mDecoratedMeasurement;
+        return -mOrientationHelper.getStartAfterPadding()- mDecoratedMeasurement;
     }
 
     protected float getDistanceRatio() {
