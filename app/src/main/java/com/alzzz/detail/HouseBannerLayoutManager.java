@@ -711,9 +711,10 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         float x = getProperty(i) - mOffset;
         float deltaX;
         if (isHeader(i)){
-            deltaX = Math.abs(x);
+            deltaX = Math.abs(x)*mDecoratedMeasurement/Math.abs(mDecoratedMeasurement-mSpaceMain);
+
         } else if (isTail(i)){
-            deltaX = Math.abs(x - 2* mSpaceMain);
+            deltaX = Math.abs(x - 2*mSpaceMain) * mDecoratedMeasurement/Math.abs(mDecoratedMeasurement-mSpaceMain);
         } else {
             deltaX = Math.abs(x - mSpaceMain);
         }
