@@ -720,7 +720,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         }
 
         if (deltaX - mDecoratedMeasurement > 0) deltaX = mDecoratedMeasurement;
-        return 1f - deltaX / mDecoratedMeasurement * (1f - 0.8f);
+        return 1f - deltaX / mDecoratedMeasurement * (1f - 0.9f);
     }
 
     private boolean useMaxVisibleCount() {
@@ -741,7 +741,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     }
 
     /* package */ float getMaxOffset() {
-        return !mShouldReverseLayout ? (getItemCount() - 1) * mInterval - 2*mSpaceMain : 0;
+        return !mShouldReverseLayout ? (getItemCount()) * mInterval - mOrientationHelper.getTotalSpace() : 0;
     }
 
     /* package */ float getMinOffset() {

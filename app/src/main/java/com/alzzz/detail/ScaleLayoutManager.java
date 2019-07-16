@@ -138,16 +138,6 @@ public class ScaleLayoutManager extends HouseBannerLayoutManager {
     private float calculateScale(float x, int pos) {
         float deltaX = Math.abs(x - mSpaceMain);
         float targetDistance = mDecoratedMeasurement;
-//        if (pos == 0){
-//            deltaX = Math.abs(x);
-//            targetDistance = targetDistance - mSpaceMain;
-//        } else if (pos == 9){
-//            deltaX = Math.abs(x - 2*mSpaceMain);
-//            targetDistance = targetDistance - mSpaceMain;
-//        } else {
-//            deltaX = Math.abs(x - mSpaceMain);
-//        }
-
 
         if (deltaX - targetDistance > 0) deltaX = targetDistance;
         return 1f - deltaX / targetDistance * (1f - minScale);
