@@ -110,10 +110,10 @@ public class ScaleLayoutManager extends HouseBannerLayoutManager {
     }
 
     @Override
-    protected void setItemViewProperty(View itemView, float targetOffset, int pos) {
-        float scale = calculateScale(targetOffset + mSpaceMain, pos);
-        itemView.setScaleX(scale);
-        itemView.setScaleY(scale);
+    protected void setItemViewProperty(View itemView, float targetOffset, float targetScale) {
+//        float scale = calculateScale(targetOffset + mSpaceMain, targetScale);
+        itemView.setScaleX(targetScale);
+        itemView.setScaleY(targetScale);
         final float alpha = calAlpha(targetOffset);
         itemView.setAlpha(alpha);
     }
@@ -136,16 +136,21 @@ public class ScaleLayoutManager extends HouseBannerLayoutManager {
      * @return the scale rate of current scroll mOffset
      */
     private float calculateScale(float x, int pos) {
-        float deltaX;
-        if (pos == 0){
-            deltaX = Math.abs(x);
-        } else {
-            deltaX = Math.abs(x - mSpaceMain);
-        }
+        float deltaX = Math.abs(x - mSpaceMain);
+        float targetDistance = mDecoratedMeasurement;
+//        if (pos == 0){
+//            deltaX = Math.abs(x);
+//            targetDistance = targetDistance - mSpaceMain;
+//        } else if (pos == 9){
+//            deltaX = Math.abs(x - 2*mSpaceMain);
+//            targetDistance = targetDistance - mSpaceMain;
+//        } else {
+//            deltaX = Math.abs(x - mSpaceMain);
+//        }
 
 
-        if (deltaX - mDecoratedMeasurement > 0) deltaX = mDecoratedMeasurement;
-        return 1f - deltaX / mDecoratedMeasurement * (1f - minScale);
+        if (deltaX - targetDistance > 0) deltaX = targetDistance;
+        return 1f - deltaX / targetDistance * (1f - minScale);
     }
 
     public static class Builder {

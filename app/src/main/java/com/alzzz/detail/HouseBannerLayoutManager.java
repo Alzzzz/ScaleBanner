@@ -123,7 +123,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      */
     protected abstract float setInterval();
 
-    protected abstract void setItemViewProperty(View itemView, float targetOffset, int pos);
+    protected abstract void setItemViewProperty(View itemView, float targetOffset, float targetScale);
 
     /**
      * cause elevation is not support below api 21,
@@ -487,11 +487,24 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      */
     protected void setUp() {
 
+
     }
 
     private float getProperty(int position) {
-        //position为0和最后一个时需要特殊处理
         return mShouldReverseLayout ? position * -mInterval : position * mInterval;
+    }
+
+    /**
+     * 是否是最尾部
+     * @return
+     * @param position
+     */
+    private boolean isTail(int position) {
+        return position == getItemCount()-1;
+    }
+
+    private boolean isHeader(int position) {
+        return position == 0;
     }
 
     @Override
@@ -676,7 +689,8 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
                 resetViewProperty(scrap);
                 // we need i to calculate the real offset of current view
                 float targetOffset = getProperty(i) - mOffset;
-                layoutScrap(scrap, targetOffset, adapterPosition);
+                float targetScale = getTargetScale(i);
+                layoutScrap(scrap, targetOffset, targetScale);
                 final float orderWeight = mEnableBringCenterToFront ?
                         setViewElevation(scrap, targetOffset) : adapterPosition;
                 if (orderWeight > lastOrderWeight) {
@@ -691,6 +705,21 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         }
 
         currentFocusView.requestFocus();
+    }
+
+    private float getTargetScale(int i) {
+        float x = getProperty(i) - mOffset;
+        float deltaX;
+        if (isHeader(i)){
+            deltaX = Math.abs(x);
+        } else if (isTail(i)){
+            deltaX = Math.abs(x - 2* mSpaceMain);
+        } else {
+            deltaX = Math.abs(x - mSpaceMain);
+        }
+
+        if (deltaX - mDecoratedMeasurement > 0) deltaX = mDecoratedMeasurement;
+        return 1f - deltaX / mDecoratedMeasurement * (1f - 0.8f);
     }
 
     private boolean useMaxVisibleCount() {
@@ -711,24 +740,24 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     }
 
     /* package */ float getMaxOffset() {
-        return !mShouldReverseLayout ? (getItemCount() - 1) * mInterval : 0;
+        return !mShouldReverseLayout ? (getItemCount() - 1) * mInterval - 2*mSpaceMain : 0;
     }
 
     /* package */ float getMinOffset() {
         return !mShouldReverseLayout ? 0 : -(getItemCount() - 1) * mInterval;
     }
 
-    private void layoutScrap(View scrap, float targetOffset, int pos) {
+    private void layoutScrap(View scrap, float targetOffset, float targetScale) {
         final int left = calItemLeft(scrap, targetOffset);
         final int top = calItemTop(scrap, targetOffset);
         if (mOrientation == VERTICAL) {
             layoutDecorated(scrap, mSpaceInOther + left, mSpaceMain + top,
                     mSpaceInOther + left + mDecoratedMeasurementInOther, mSpaceMain + top + mDecoratedMeasurement);
         } else {
-            layoutDecorated(scrap, mSpaceMain + left, mSpaceInOther + top,
-                    mSpaceMain + left + mDecoratedMeasurement, mSpaceInOther + top + mDecoratedMeasurementInOther);
+            layoutDecorated(scrap, left, mSpaceInOther + top,
+                    left + mDecoratedMeasurement, mSpaceInOther + top + mDecoratedMeasurementInOther);
         }
-        setItemViewProperty(scrap, targetOffset, pos);
+        setItemViewProperty(scrap, targetOffset, targetScale);
     }
 
     protected int calItemLeft(View itemView, float targetOffset) {
@@ -744,7 +773,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      * the view will be removed and recycled in {@link #layoutItems(RecyclerView.Recycler)}
      */
     protected float maxRemoveOffset() {
-        return mOrientationHelper.getTotalSpace() - mSpaceMain;
+        return mOrientationHelper.getTotalSpace() + mSpaceMain;
     }
 
     /**
@@ -752,7 +781,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      * the view will be removed and recycled in {@link #layoutItems(RecyclerView.Recycler)}
      */
     protected float minRemoveOffset() {
-        return -mDecoratedMeasurement - mOrientationHelper.getStartAfterPadding() - mSpaceMain;
+        return -mOrientationHelper.getStartAfterPadding() - mSpaceMain - mDecoratedMeasurement;
     }
 
     protected float getDistanceRatio() {
