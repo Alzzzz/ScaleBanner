@@ -857,7 +857,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     }
 
     /**
-     * used by {@link CenterSnapHelper} to center the current view
+     * used by {@link HouseBannerSnapHelper} to center the current view
      *
      * @return the dy between center and current position
      */
