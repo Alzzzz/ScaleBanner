@@ -1,6 +1,5 @@
-package com.alzzz.detail;
+package com.alzzz.scalemanagerlib;
 
-import android.content.Context;
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,10 +61,10 @@ public class HouseBannerSnapHelper extends RecyclerView.OnFlingListener {
 
     private int getCurrentPos(RecyclerView recyclerView) {
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-        if (!(layoutManager instanceof HouseBannerLayoutManager)){
+        if (!(layoutManager instanceof CardScaleLayoutManager)){
             return 0;
         }
-        return ((HouseBannerLayoutManager) layoutManager).getCurrentPosition();
+        return ((CardScaleLayoutManager) layoutManager).getCurrentPosition();
     }
 
     @Override
@@ -355,7 +354,7 @@ public class HouseBannerSnapHelper extends RecyclerView.OnFlingListener {
             return RecyclerView.NO_POSITION;
         }
 
-        if (!(layoutManager instanceof HouseBannerLayoutManager)){
+        if (!(layoutManager instanceof CardScaleLayoutManager)){
             return 0;
         }
         View mStartMostChildView = null;

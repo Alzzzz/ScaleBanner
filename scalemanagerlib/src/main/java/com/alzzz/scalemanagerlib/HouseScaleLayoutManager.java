@@ -1,15 +1,15 @@
-package com.alzzz.detail;
+package com.alzzz.scalemanagerlib;
 
 import android.content.Context;
 import android.view.View;
 
 /**
- * An implementation of {@link HouseBannerLayoutManager}
+ * An implementation of {@link CardScaleLayoutManager}
  * which zooms the center item
  */
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class ScaleLayoutManager extends HouseBannerLayoutManager {
+public class HouseScaleLayoutManager extends CardScaleLayoutManager {
 
     private int itemSpace;
     private float minScale;
@@ -17,27 +17,27 @@ public class ScaleLayoutManager extends HouseBannerLayoutManager {
     private float maxAlpha;
     private float minAlpha;
 
-    public ScaleLayoutManager(Context context, int itemSpace) {
+    private HouseScaleLayoutManager(Context context, int itemSpace) {
         this(new Builder(context, itemSpace));
     }
 
-    public ScaleLayoutManager(Context context, int itemSpace, int orientation) {
+    private HouseScaleLayoutManager(Context context, int itemSpace, int orientation) {
         this(new Builder(context, itemSpace).setOrientation(orientation));
     }
 
-    public ScaleLayoutManager(Context context, int itemSpace, int orientation, boolean reverseLayout) {
+    private HouseScaleLayoutManager(Context context, int itemSpace, int orientation, boolean reverseLayout) {
         this(new Builder(context, itemSpace).setOrientation(orientation).setReverseLayout(reverseLayout));
     }
 
-    public ScaleLayoutManager(Builder builder) {
+    private HouseScaleLayoutManager(Builder builder) {
         this(builder.context, builder.itemSpace, builder.minScale, builder.maxAlpha, builder.minAlpha,
                 builder.orientation, builder.moveSpeed, builder.maxVisibleItemCount, builder.distanceToBottom,
                 builder.reverseLayout);
     }
 
-    private ScaleLayoutManager(Context context, int itemSpace, float minScale, float maxAlpha, float minAlpha,
-                               int orientation, float moveSpeed, int maxVisibleItemCount, int distanceToBottom,
-                               boolean reverseLayout) {
+    private HouseScaleLayoutManager(Context context, int itemSpace, float minScale, float maxAlpha, float minAlpha,
+                                    int orientation, float moveSpeed, int maxVisibleItemCount, int distanceToBottom,
+                                    boolean reverseLayout) {
         super(context, orientation, reverseLayout);
         setDistanceToBottom(distanceToBottom);
         setMaxVisibleItemCount(maxVisibleItemCount);
@@ -118,6 +118,22 @@ public class ScaleLayoutManager extends HouseBannerLayoutManager {
         itemView.setAlpha(alpha);
     }
 
+    @Override
+    protected float getTargetScale(int position) {
+        float x = getProperty(position) - mOffset  - mOrientationHelper.getStartAfterPadding();
+        float deltaX;
+        if (isHeader(position)){
+            deltaX = Math.abs(x)*mDecoratedMeasurement/Math.abs(mDecoratedMeasurement-mSpaceMain);
+        } else if (isTail(position)){
+            deltaX = Math.abs(x - 2*mSpaceMain) * mDecoratedMeasurement/Math.abs(mDecoratedMeasurement-mSpaceMain);
+        } else {
+            deltaX = Math.abs(x - mSpaceMain);
+        }
+
+        if (deltaX - mDecoratedMeasurement > 0) deltaX = mDecoratedMeasurement;
+        return 1f - deltaX / mDecoratedMeasurement * (1f - minScale);
+    }
+
     private float calAlpha(float targetOffset) {
         final float offset = Math.abs(targetOffset);
         float alpha = (minAlpha - maxAlpha) / mInterval * offset + maxAlpha;
@@ -144,7 +160,7 @@ public class ScaleLayoutManager extends HouseBannerLayoutManager {
     }
 
     public static class Builder {
-        private static final float SCALE_RATE = 0.8f;
+        private static final float SCALE_RATE = 0.9f;
         private static final float DEFAULT_SPEED = 1f;
         private static float MIN_ALPHA = 1f;
         private static float MAX_ALPHA = 1f;
@@ -169,8 +185,8 @@ public class ScaleLayoutManager extends HouseBannerLayoutManager {
             maxAlpha = MAX_ALPHA;
             minAlpha = MIN_ALPHA;
             reverseLayout = false;
-            distanceToBottom = HouseBannerLayoutManager.INVALID_SIZE;
-            maxVisibleItemCount = HouseBannerLayoutManager.DETERMINE_BY_MAX_AND_MIN;
+            distanceToBottom = CardScaleLayoutManager.INVALID_SIZE;
+            maxVisibleItemCount = CardScaleLayoutManager.DETERMINE_BY_MAX_AND_MIN;
         }
 
         public Builder setOrientation(int orientation) {
@@ -215,8 +231,8 @@ public class ScaleLayoutManager extends HouseBannerLayoutManager {
             return this;
         }
 
-        public ScaleLayoutManager build() {
-            return new ScaleLayoutManager(this);
+        public HouseScaleLayoutManager build() {
+            return new HouseScaleLayoutManager(this);
         }
     }
 }

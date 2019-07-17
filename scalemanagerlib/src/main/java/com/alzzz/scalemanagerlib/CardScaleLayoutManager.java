@@ -1,4 +1,4 @@
-package com.alzzz.detail;
+package com.alzzz.scalemanagerlib;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -17,10 +17,12 @@ import static android.support.v7.widget.RecyclerView.NO_POSITION;
 /**
  * An implementation of {@link RecyclerView.LayoutManager} which behaves like view pager.
  * Please make sure your child view have the same size.
+ *
+ * OrientationHelper.VERTICAL unavailable now
  */
 
 @SuppressWarnings({"WeakerAccess", "unused", "SameParameterValue"})
-public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
+public abstract class CardScaleLayoutManager extends LinearLayoutManager {
 
     public static final int DETERMINE_BY_MAX_AND_MIN = -1;
 
@@ -68,13 +70,6 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      * Defines if layout should be calculated from end to start.
      */
     private boolean mReverseLayout = false;
-
-    /**
-     * This keeps the final value for how LayoutManager should start laying out views.
-     * It is calculated by checking {@link #getReverseLayout()} and View's layout direction.
-     * {@link #onLayoutChildren(RecyclerView.Recycler, RecyclerView.State)} is run.
-     */
-    private boolean mShouldReverseLayout = false;
 
     /**
      * Works the same way as {@link android.widget.AbsListView#setSmoothScrollbarEnabled(boolean)}.
@@ -126,18 +121,24 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     protected abstract void setItemViewProperty(View itemView, float targetOffset, float targetScale);
 
     /**
+     * Get zoom ratio
+     * @param position
+     * @return
+     */
+    protected abstract float getTargetScale(int position);
+    /**
      * cause elevation is not support below api 21,
      * so you can set your elevation here for supporting it below api 21
-     * or you can just setElevation in {@link #setItemViewProperty(View, float)}
+     * or you can just setElevation in {@link #setItemViewProperty(View, float, float)}
      */
     protected float setViewElevation(View itemView, float targetOffset) {
         return 0;
     }
 
     /**
-     * Creates a horizontal HouseBannerLayoutManager
+     * Creates a horizontal CardScaleLayoutManager
      */
-    public HouseBannerLayoutManager(Context context) {
+    public CardScaleLayoutManager(Context context) {
         this(context, HORIZONTAL, false);
     }
 
@@ -145,7 +146,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      * @param orientation   Layout orientation. Should be {@link #HORIZONTAL} or {@link #VERTICAL}
      * @param reverseLayout When set to true, layouts from end to start
      */
-    public HouseBannerLayoutManager(Context context, int orientation, boolean reverseLayout) {
+    public CardScaleLayoutManager(Context context, int orientation, boolean reverseLayout) {
         super(context);
         setOrientation(orientation);
         setReverseLayout(reverseLayout);
@@ -204,7 +205,6 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         SavedState savedState = new SavedState();
         savedState.position = mPendingScrollPosition;
         savedState.offset = mOffset;
-        savedState.isReverseLayout = mShouldReverseLayout;
         return savedState;
     }
 
@@ -243,7 +243,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     }
 
     /**
-     * Sets the orientation of the layout. {@link HouseBannerLayoutManager}
+     * Sets the orientation of the layout. {@link CardScaleLayoutManager}
      * will do its best to keep scroll position.
      *
      * @param orientation {@link #HORIZONTAL} or {@link #VERTICAL}
@@ -283,20 +283,6 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         if (this.mMaxVisibleItemCount == mMaxVisibleItemCount) return;
         this.mMaxVisibleItemCount = mMaxVisibleItemCount;
         removeAllViews();
-    }
-
-    /**
-     * Calculates the view layout order. (e.g. from end to start or start to end)
-     * RTL layout support is applied automatically. So if layout is RTL and
-     * {@link #getReverseLayout()} is {@code true}, elements will be laid out starting from left.
-     */
-    private void resolveShouldLayoutReverse() {
-        // A == B is the same result, but we rather keep it readable
-        if (mOrientation == VERTICAL || !isLayoutRTL()) {
-            mShouldReverseLayout = mReverseLayout;
-        } else {
-            mShouldReverseLayout = !mReverseLayout;
-        }
     }
 
     /**
@@ -372,7 +358,6 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         }
 
         ensureLayoutState();
-        resolveShouldLayoutReverse();
 
         //make sure properties are correct while measure more than once
         View scrap = getMeasureView(recycler, state, 0);
@@ -404,14 +389,12 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         }
 
         if (mPendingSavedState != null) {
-            mShouldReverseLayout = mPendingSavedState.isReverseLayout;
             mPendingScrollPosition = mPendingSavedState.position;
             mOffset = mPendingSavedState.offset;
         }
 
         if (mPendingScrollPosition != NO_POSITION) {
-            mOffset = mShouldReverseLayout ?
-                    mPendingScrollPosition * -mInterval : mPendingScrollPosition * mInterval;
+            mOffset = mPendingScrollPosition * mInterval;
         }
 
         layoutItems(recycler);
@@ -459,17 +442,17 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     private int getMovement(int direction) {
         if (mOrientation == VERTICAL) {
             if (direction == View.FOCUS_UP) {
-                return mShouldReverseLayout ? DIRECTION_FORWARD : DIRECTION_BACKWARD;
+                return DIRECTION_BACKWARD;
             } else if (direction == View.FOCUS_DOWN) {
-                return mShouldReverseLayout ? DIRECTION_BACKWARD : DIRECTION_FORWARD;
+                return DIRECTION_FORWARD;
             } else {
                 return DIRECTION_NO_WHERE;
             }
         } else {
             if (direction == View.FOCUS_LEFT) {
-                return mShouldReverseLayout ? DIRECTION_FORWARD : DIRECTION_BACKWARD;
+                return DIRECTION_BACKWARD;
             } else if (direction == View.FOCUS_RIGHT) {
-                return mShouldReverseLayout ? DIRECTION_BACKWARD : DIRECTION_FORWARD;
+                return DIRECTION_FORWARD;
             } else {
                 return DIRECTION_NO_WHERE;
             }
@@ -490,8 +473,8 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
 
     }
 
-    private float getProperty(int position) {
-        return mShouldReverseLayout ? position * -mInterval: position * mInterval + mOrientationHelper.getStartAfterPadding() ;
+    protected float getProperty(int position) {
+        return position * mInterval + mOrientationHelper.getStartAfterPadding() ;
     }
 
     /**
@@ -499,11 +482,11 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      * @return
      * @param position
      */
-    private boolean isTail(int position) {
+    protected boolean isTail(int position) {
         return position == getItemCount()-1;
     }
 
-    private boolean isHeader(int position) {
+    protected boolean isHeader(int position) {
         return position == 0;
     }
 
@@ -517,7 +500,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     public void scrollToPosition(int position) {
         if (!mInfinite && (position < 0 || position >= getItemCount())) return;
         mPendingScrollPosition = position;
-        mOffset = mShouldReverseLayout ? position * -mInterval : position * mInterval;
+        mOffset = position * mInterval;
         requestLayout();
     }
 
@@ -557,12 +540,11 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         }
 
         if (!mSmoothScrollbarEnabled) {
-            return !mShouldReverseLayout ?
-                    getCurrentPosition() : getItemCount() - getCurrentPosition() - 1;
+            return getCurrentPosition();
         }
 
         final float realOffset = getOffsetOfRightAdapterPosition();
-        return !mShouldReverseLayout ? (int) realOffset : (int) ((getItemCount() - 1) * mInterval + realOffset);
+        return (int) realOffset;
     }
 
     private int computeScrollExtent() {
@@ -643,8 +625,7 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         if (itemCount == 0) return;
 
         // make sure that current position start from 0 to 1
-        final int currentPos = mShouldReverseLayout ?
-                -getCurrentPositionOffset() : getCurrentPositionOffset();
+        final int currentPos = getCurrentPositionOffset();
         int start = currentPos - mLeftItems;
         int end = currentPos + mRightItems;
 
@@ -707,21 +688,6 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         currentFocusView.requestFocus();
     }
 
-    private float getTargetScale(int i) {
-        float x = getProperty(i) - mOffset  - mOrientationHelper.getStartAfterPadding();
-        float deltaX;
-        if (isHeader(i)){
-            deltaX = Math.abs(x)*mDecoratedMeasurement/Math.abs(mDecoratedMeasurement-mSpaceMain);
-        } else if (isTail(i)){
-            deltaX = Math.abs(x - 2*mSpaceMain) * mDecoratedMeasurement/Math.abs(mDecoratedMeasurement-mSpaceMain);
-        } else {
-            deltaX = Math.abs(x - mSpaceMain);
-        }
-
-        if (deltaX - mDecoratedMeasurement > 0) deltaX = mDecoratedMeasurement;
-        return 1f - deltaX / mDecoratedMeasurement * (1f - 0.9f);
-    }
-
     private boolean useMaxVisibleCount() {
         return mMaxVisibleItemCount != DETERMINE_BY_MAX_AND_MIN;
     }
@@ -740,11 +706,11 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     }
 
     /* package */ float getMaxOffset() {
-        return !mShouldReverseLayout ? (getItemCount()) * mInterval - mOrientationHelper.getTotalSpace() : 0;
+        return (getItemCount()) * mInterval - mOrientationHelper.getTotalSpace();
     }
 
     /* package */ float getMinOffset() {
-        return !mShouldReverseLayout ? 0 : -(getItemCount() - 1) * mInterval;
+        return 0;
     }
 
     private void layoutScrap(View scrap, float targetOffset, float targetScale) {
@@ -773,7 +739,8 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      * the view will be removed and recycled in {@link #layoutItems(RecyclerView.Recycler)}
      */
     protected float maxRemoveOffset() {
-        return mOrientationHelper.getTotalSpace() + mSpaceMain+mDecoratedMeasurement;
+        //此时的返回并不准确，但一定多余1个
+        return mOrientationHelper.getTotalSpace() + mSpaceMain + mDecoratedMeasurement;
     }
 
     /**
@@ -794,14 +761,9 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         int position = getCurrentPositionOffset();
         if (!mInfinite) return Math.abs(position);
 
-        position = !mShouldReverseLayout ?
-                //take care of position = getItemCount()
-                (position >= 0 ?
+        position =(position >= 0 ?
                         position % getItemCount() :
-                        getItemCount() + position % getItemCount()) :
-                (position > 0 ?
-                        getItemCount() - position % getItemCount() :
-                        -position % getItemCount());
+                        getItemCount() + position % getItemCount());
         return position == getItemCount() ? 0 : position;
     }
 
@@ -847,39 +809,18 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
      * cause when {@link #mInfinite} is set true, there will be no limitation of {@link #mOffset}
      */
     private float getOffsetOfRightAdapterPosition() {
-        if (mShouldReverseLayout)
-            return mInfinite ?
-                    (mOffset <= 0 ?
-                            (mOffset % (mInterval * getItemCount())) :
-                            (getItemCount() * -mInterval + mOffset % (mInterval * getItemCount()))) :
-                    mOffset;
-        else
-            return mInfinite ?
-                    (mOffset >= 0 ?
-                            (mOffset % (mInterval * getItemCount())) :
-                            (getItemCount() * mInterval + mOffset % (mInterval * getItemCount()))) :
-                    mOffset;
-    }
-
-    /**
-     * used by {@link HouseBannerSnapHelper} to center the current view
-     *
-     * @return the dy between center and current position
-     */
-    public int getOffsetToCenter() {
-        if (mInfinite)
-            return (int) ((getCurrentPositionOffset() * mInterval - mOffset) * getDistanceRatio());
-        return (int) ((getCurrentPosition() *
-                (!mShouldReverseLayout ? mInterval : -mInterval) - mOffset) * getDistanceRatio());
+        return mInfinite ?
+                (mOffset >= 0 ?
+                        (mOffset % (mInterval * getItemCount())) :
+                        (getItemCount() * mInterval + mOffset % (mInterval * getItemCount()))) :
+                mOffset;
     }
 
     public int getOffsetToPosition(int position) {
         if (mInfinite)
-            return (int) (((getCurrentPositionOffset() +
-                    (!mShouldReverseLayout ? position - getCurrentPositionOffset() : -getCurrentPositionOffset() - position)) *
+            return (int) (((getCurrentPositionOffset() + (position - getCurrentPositionOffset())) *
                     mInterval - mOffset) * getDistanceRatio());
-        return (int) ((position *
-                (!mShouldReverseLayout ? mInterval : -mInterval) - mOffset) * getDistanceRatio());
+        return (int) ((position * mInterval - mOffset) * getDistanceRatio());
     }
 
     public void setOnPageChangeListener(OnPageChangeListener onPageChangeListener) {
@@ -957,7 +898,6 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
     private static class SavedState implements Parcelable {
         int position;
         float offset;
-        boolean isReverseLayout;
 
         SavedState() {
 
@@ -966,13 +906,11 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         SavedState(Parcel in) {
             position = in.readInt();
             offset = in.readFloat();
-            isReverseLayout = in.readInt() == 1;
         }
 
         public SavedState(SavedState other) {
             position = other.position;
             offset = other.offset;
-            isReverseLayout = other.isReverseLayout;
         }
 
         @Override
@@ -984,11 +922,10 @@ public abstract class HouseBannerLayoutManager extends LinearLayoutManager {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(position);
             dest.writeFloat(offset);
-            dest.writeInt(isReverseLayout ? 1 : 0);
         }
 
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = new Parcelable.Creator<SavedState>() {
+        public static final Creator<SavedState> CREATOR
+                = new Creator<SavedState>() {
             @Override
             public SavedState createFromParcel(Parcel in) {
                 return new SavedState(in);

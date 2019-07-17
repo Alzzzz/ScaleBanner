@@ -8,7 +8,7 @@
     <ImageView
         android:id="@+id/iv_cover"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="195dp"
         android:scaleType="centerCrop"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,11 +17,12 @@
 
     <TextView
         android:id="@+id/tv_room_type_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="112dp"
         android:textColor="#222"
         android:textSize="18sp"
+        android:gravity="center"
+        android:background="#ccc"
         android:text="@string/app_name"
         app:layout_constraintTop_toBottomOf="@id/iv_cover"
         app:layout_constraintStart_toStartOf="parent"

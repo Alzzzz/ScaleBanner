@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/et_num_element"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:hint="请输入数量"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <Button
+        android:id="@+id/btn_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/et_num_element"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="确定"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_main"
