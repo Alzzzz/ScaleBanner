@@ -3,6 +3,8 @@ package com.alzzz.detail;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -51,9 +53,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupData() {
+
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String content = numEleEt.getText().toString();
+                int contentSize = 0;
+                if (!TextUtils.isEmpty(content)){
+                    contentSize = Integer.parseInt(content);
+                }
+                resetRecyclerContent(contentSize);
+            }
+        });
+        resetRecyclerContent(10);
+    }
+
+    private void resetRecyclerContent(int contentSize) {
         List<RoomType> roomTypes = new ArrayList<>();
 
-        for (int i=0; i<10; i++){
+        for (int i=0; i<contentSize; i++){
             RoomType roomType = new RoomType();
             roomType.setCoverUrl("");
             roomType.setHouseTypeName("ROOM TYPE "+i);

@@ -706,7 +706,11 @@ public abstract class CardScaleLayoutManager extends LinearLayoutManager {
     }
 
     /* package */ float getMaxOffset() {
-        return (getItemCount()) * mInterval - mOrientationHelper.getTotalSpace();
+        float maxOffset = (getItemCount()) * mInterval - mOrientationHelper.getTotalSpace();
+        if (maxOffset < 0){
+            maxOffset = 0;
+        }
+        return maxOffset;
     }
 
     /* package */ float getMinOffset() {
