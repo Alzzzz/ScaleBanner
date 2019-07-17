@@ -1,7 +1,14 @@
 package com.alzzz.detail;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,8 +45,12 @@ public class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeAdapter.ViewHo
         return viewHolder;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBindViewHolder(@NonNull RoomTypeAdapter.ViewHolder viewHolder, int position) {
+        if (position == 0){
+            viewHolder.itemView.setTransitionName("sharedView");
+        }
         viewHolder.bindView(mRoomTypeList.get(position));
     }
 
@@ -54,16 +65,32 @@ public class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeAdapter.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView coverImg;
         public TextView roomTypeName;
+        private Context mContext;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             coverImg = itemView.findViewById(R.id.iv_cover);
             roomTypeName = itemView.findViewById(R.id.tv_room_type_name);
+            this.mContext = itemView.getContext();
         }
 
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         public void bindView(RoomType roomType){
-            coverImg.setImageResource(R.drawable.demo1);
+            if (roomType.getCoverRes()>0){
+                coverImg.setImageResource(roomType.getCoverRes());
+            } else {
+                coverImg.setImageResource(R.drawable.demo1);
+            }
             roomTypeName.setText(roomType.getHouseTypeName());
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.setTransitionName("sharedView");
+                    Intent intent = new Intent(mContext, SecondActivity.class);
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation((Activity) mContext, v, "sharedView").toBundle();
+                    mContext.startActivity(intent, bundle);
+                }
+            });
         }
     }
 }

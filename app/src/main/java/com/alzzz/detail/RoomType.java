@@ -7,7 +7,17 @@ package com.alzzz.detail;
  */
 public class RoomType {
     private String coverUrl;
+    private int coverRes;
     private String houseTypeName;
+
+
+    public int getCoverRes() {
+        return coverRes;
+    }
+
+    public void setCoverRes(int coverRes) {
+        this.coverRes = coverRes;
+    }
 
     public String getCoverUrl() {
         return coverUrl;
