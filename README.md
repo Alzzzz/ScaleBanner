@@ -33,3 +33,17 @@
     pagerSnapHelper.attachToRecyclerView(recyclerView);
 ```
 ## 引用方式
+maven引入方式：
+``` maven
+    <dependency>
+      <groupId>com.alzzz</groupId>
+      <artifactId>scalemanagerlib</artifactId>
+      <version>1.0.0</version>
+      <type>pom</type>
+    </dependency>
+```
+
+gradle引入方式：
+``` gradle
+    implementation 'com.alzzz:scalemanagerlib:1.0.0'
+```
