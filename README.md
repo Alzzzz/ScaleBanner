@@ -11,23 +11,23 @@
 
 ## 使用方式
 1、RecyclerView使用HouseScaleLayoutManager
-    ``` java
-        HouseScaleLayoutManager layoutManager = new HouseScaleLayoutManager
-                .Builder(this, 0)
-                .build();
-        layoutManager.setOrientation(CardScaleLayoutManager.HORIZONTAL);
-        layoutManager.setInfinite(false);
-        recyclerView.setLayoutManager(layoutManager);
-    ```
+``` java
+    HouseScaleLayoutManager layoutManager = new HouseScaleLayoutManager
+            .Builder(this, 0)
+            .build();
+    layoutManager.setOrientation(CardScaleLayoutManager.HORIZONTAL);
+    layoutManager.setInfinite(false);
+    recyclerView.setLayoutManager(layoutManager);
+```
 2、滑动绑定，使用HouseBannerSnapHelper绑定RecyclerView
-    ``` java
-        HouseBannerSnapHelper pagerSnapHelper = new HouseBannerSnapHelper();
-        pagerSnapHelper.attachToRecyclerView(recyclerView);
-    ```
+``` java
+    HouseBannerSnapHelper pagerSnapHelper = new HouseBannerSnapHelper();
+    pagerSnapHelper.attachToRecyclerView(recyclerView);
+```
 
 3、绑定Adapter，自定义View的样式
-    ``` java
-        HouseBannerSnapHelper pagerSnapHelper = new HouseBannerSnapHelper();
-        pagerSnapHelper.attachToRecyclerView(recyclerView);
-    ```
+``` java
+    HouseBannerSnapHelper pagerSnapHelper = new HouseBannerSnapHelper();
+    pagerSnapHelper.attachToRecyclerView(recyclerView);
+```
 ## 引用方式
