@@ -10,7 +10,7 @@
 ![image](https://github.com/Alzzzz/ScaleBanner/blob/master/images/scale_image_3.jpg){:width="200px"}
 
 ## 使用方式
-1、RecyclerView使用HouseScaleLayoutManager
+1、RecyclerView使用HouseScaleLayoutManager 
     ``` java
         HouseScaleLayoutManager layoutManager = new HouseScaleLayoutManager
                 .Builder(this, 0)
@@ -19,13 +19,13 @@
         layoutManager.setInfinite(false);
         recyclerView.setLayoutManager(layoutManager);
     ```
-2、滑动绑定，使用HouseBannerSnapHelper绑定RecyclerView
+2、滑动绑定，使用HouseBannerSnapHelper绑定RecyclerView 
     ``` java
         HouseBannerSnapHelper pagerSnapHelper = new HouseBannerSnapHelper();
         pagerSnapHelper.attachToRecyclerView(recyclerView);
     ```
 
-3、绑定Adapter，自定义View的样式
+3、绑定Adapter，自定义View的样式 
     ``` java
         HouseBannerSnapHelper pagerSnapHelper = new HouseBannerSnapHelper();
         pagerSnapHelper.attachToRecyclerView(recyclerView);
