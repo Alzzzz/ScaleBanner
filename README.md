@@ -3,11 +3,11 @@
 
 ## 样式展示
 #### 最前面的的样式
-![image](https://github.com/Alzzzz/ScaleBanner/blob/master/images/scale_image_1.jpg){:width="200px"}
+![image](https://github.com/Alzzzz/ScaleBanner/blob/master/images/scale_image_1.jpg)
 #### 中间的样式
-![image](https://github.com/Alzzzz/ScaleBanner/blob/master/images/scale_image_2.jpg){:width="200px"}
+![image](https://github.com/Alzzzz/ScaleBanner/blob/master/images/scale_image_2.jpg)
 #### 最后面的样式
-![image](https://github.com/Alzzzz/ScaleBanner/blob/master/images/scale_image_3.jpg){:width="200px"}
+![image](https://github.com/Alzzzz/ScaleBanner/blob/master/images/scale_image_3.jpg)
 
 ## 使用方式
 1、RecyclerView使用HouseScaleLayoutManager
